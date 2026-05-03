@@ -49,7 +49,6 @@ namespace EmployeeManagementWeb.Data
                 }
             }
 
-            var roleTargets = Users.Where(u => u.UserId == "admin" || string.IsNullOrWhiteSpace(u.Role)).ToList();
             var roleTargets = Users
                 .Where(u => u.UserId == "admin" || string.IsNullOrWhiteSpace(u.Role))
                 .ToList();
@@ -152,7 +151,6 @@ namespace EmployeeManagementWeb.Data
             }
         }
 
-
         private string ResolveRole(string userId, string? currentRole)
         {
             if (userId == "admin")
@@ -167,9 +165,6 @@ namespace EmployeeManagementWeb.Data
         {
             using var connection = new SqliteConnection(Database.GetConnectionString());
             connection.Open();
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT Password FROM Users WHERE Id = $id LIMIT 1;";
-            cmd.Parameters.AddWithValue("$id", userId);
 
             using var cmd = connection.CreateCommand();
             cmd.CommandText = "SELECT Password FROM Users WHERE Id = $id LIMIT 1;";
