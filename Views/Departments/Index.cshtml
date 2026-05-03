@@ -1,0 +1,44 @@
+@model List<EmployeeManagementWeb.Models.Department>
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="page-title-area">
+    <h2>部門一覧</h2>
+    <a asp-action="Create" class="btn btn-primary">部門登録</a>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="error-message">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>部門ID</th>
+            <th>部門名</th>
+            <th>登録者</th>
+            <th>更新者</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var department in Model)
+        {
+            <tr>
+                <td>@department.DepartmentId</td>
+                <td>@department.DepartmentName</td>
+                <td>@department.CreatedBy</td>
+                <td>@department.UpdatedBy</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@department.DepartmentId" class="btn btn-small btn-edit">更新</a>
+                    <a asp-action="Delete" asp-route-id="@department.DepartmentId" class="btn btn-small btn-delete">削除</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

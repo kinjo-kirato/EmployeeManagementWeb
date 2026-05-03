@@ -1,0 +1,42 @@
+@model EmployeeManagementWeb.Models.LoginViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <h2>ログイン</h2>
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="error-message">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+        <form asp-action="Login" method="post">
+            <div class="form-group">
+                <label asp-for="UserId"></label>
+                <input asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="validation"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary full-width">
+                ログイン
+            </button>
+        </form>
+
+        <div class="login-info">
+            <p>初期ユーザー</p>
+            <p>ユーザーID：admin / パスワード：1234</p>
+            <p>ユーザーID：user01 / パスワード：1111</p>
+        </div>
+    </div>
+</div>

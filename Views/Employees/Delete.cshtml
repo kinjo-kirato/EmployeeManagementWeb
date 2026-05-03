@@ -1,0 +1,37 @@
+@model EmployeeManagementWeb.Models.Employee
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="form-card">
+    <h2>社員削除</h2>
+
+    <p class="delete-message">
+        以下の社員を削除してもよろしいですか？
+    </p>
+
+    <table class="detail-table">
+        <tr>
+            <th>社員ID</th>
+            <td>@Model.EmployeeId</td>
+        </tr>
+        <tr>
+            <th>社員名</th>
+            <td>@Model.EmployeeName</td>
+        </tr>
+        <tr>
+            <th>部門名</th>
+            <td>@Model.Department?.DepartmentName</td>
+        </tr>
+    </table>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
+
+        <div class="button-area">
+            <button type="submit" class="btn btn-delete">削除</button>
+            <a asp-action="Index" class="btn btn-secondary">戻る</a>
+        </div>
+    </form>
+</div>

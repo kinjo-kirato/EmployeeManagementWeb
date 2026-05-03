@@ -1,0 +1,39 @@
+@model List<EmployeeManagementWeb.Models.Employee>
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="page-title-area">
+    <h2>社員一覧</h2>
+    <a asp-action="Create" class="btn btn-primary">社員登録</a>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>社員ID</th>
+            <th>社員名</th>
+            <th>部門名</th>
+            <th>登録者</th>
+            <th>更新者</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model)
+        {
+            <tr>
+                <td>@employee.EmployeeId</td>
+                <td>@employee.EmployeeName</td>
+                <td>@employee.Department?.DepartmentName</td>
+                <td>@employee.CreatedBy</td>
+                <td>@employee.UpdatedBy</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@employee.EmployeeId" class="btn btn-small btn-edit">更新</a>
+                    <a asp-action="Delete" asp-route-id="@employee.EmployeeId" class="btn btn-small btn-delete">削除</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

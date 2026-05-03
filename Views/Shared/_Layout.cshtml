@@ -1,0 +1,37 @@
+﻿@{
+    var userName = Context.Session.GetString("UserName");
+}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <title>社員情報管理システム</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <h1 class="logo">社員情報管理システム</h1>
+
+            @if (!string.IsNullOrEmpty(userName))
+            {
+                <nav class="nav">
+                    <a asp-controller="Home" asp-action="Index">ホーム</a>
+                    <a asp-controller="Employees" asp-action="Index">社員管理</a>
+                    <a asp-controller="Departments" asp-action="Index">部門管理</a>
+                    <a asp-controller="Account" asp-action="Logout" class="logout">ログアウト</a>
+                </nav>
+            }
+        </div>
+    </header>
+
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Employee Management System</p>
+    </footer>
+</body>
+</html>

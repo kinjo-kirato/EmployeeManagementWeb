@@ -1,0 +1,23 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<div class="dashboard">
+    <h2>ダッシュボード</h2>
+
+    <p class="welcome">
+        @ViewBag.UserName さん、ログイン中です。
+    </p>
+
+    <div class="menu-grid">
+        <a asp-controller="Employees" asp-action="Index" class="menu-card">
+            <h3>社員管理</h3>
+            <p>社員の一覧表示、登録、更新、削除を行います。</p>
+        </a>
+
+        <a asp-controller="Departments" asp-action="Index" class="menu-card">
+            <h3>部門管理</h3>
+            <p>部門の一覧表示、登録、更新、削除を行います。</p>
+        </a>
+    </div>
+</div>
