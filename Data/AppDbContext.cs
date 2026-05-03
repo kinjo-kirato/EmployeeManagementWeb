@@ -1,5 +1,6 @@
 using EmployeeManagementWeb.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagementWeb.Data
@@ -23,6 +24,8 @@ namespace EmployeeManagementWeb.Data
 
         public void SeedData()
         {
+            EnsureLegacySchemaUpdated();
+
             var hasher = new PasswordHasher<User>();
 
             if (!Users.Any())
@@ -34,6 +37,16 @@ namespace EmployeeManagementWeb.Data
                 user01.PasswordHash = hasher.HashPassword(user01, "1111");
 
                 Users.AddRange(admin, user01);
+            }
+            else
+            {
+                var legacyUsers = Users.Where(u => string.IsNullOrEmpty(u.PasswordHash)).ToList();
+                foreach (var user in legacyUsers)
+                {
+                    var plainPassword = GetLegacyPassword(user.Id);
+                    user.PasswordHash = hasher.HashPassword(user, plainPassword);
+                    user.Role = string.IsNullOrWhiteSpace(user.Role) ? "User" : user.Role;
+                }
             }
 
             if (!Departments.Any())
@@ -85,6 +98,58 @@ namespace EmployeeManagementWeb.Data
             }
 
             SaveChanges();
+        }
+
+        private void EnsureLegacySchemaUpdated()
+        {
+            AddColumnIfMissing("Employees", "IsDeleted", "INTEGER NOT NULL DEFAULT 0");
+            AddColumnIfMissing("Employees", "EmployeeNumber", "TEXT NOT NULL DEFAULT ''");
+            AddColumnIfMissing("Employees", "Email", "TEXT NOT NULL DEFAULT ''");
+            AddColumnIfMissing("Employees", "HireDate", "TEXT NOT NULL DEFAULT '2000-01-01'");
+            AddColumnIfMissing("Employees", "Position", "TEXT NOT NULL DEFAULT ''");
+            AddColumnIfMissing("Employees", "CreatedAt", "TEXT NOT NULL DEFAULT '2000-01-01 00:00:00'");
+            AddColumnIfMissing("Employees", "UpdatedAt", "TEXT NOT NULL DEFAULT '2000-01-01 00:00:00'");
+            AddColumnIfMissing("Users", "PasswordHash", "TEXT NOT NULL DEFAULT ''");
+            AddColumnIfMissing("Users", "Role", "TEXT NOT NULL DEFAULT 'User'");
+        }
+
+        private void AddColumnIfMissing(string tableName, string columnName, string definition)
+        {
+            using var connection = new SqliteConnection(Database.GetConnectionString());
+            connection.Open();
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = $"PRAGMA table_info({tableName});";
+
+            var exists = false;
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    if (reader.GetString(1) == columnName)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!exists)
+            {
+                using var alterCmd = connection.CreateCommand();
+                alterCmd.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
+                alterCmd.ExecuteNonQuery();
+            }
+        }
+
+        private string GetLegacyPassword(int userId)
+        {
+            using var connection = new SqliteConnection(Database.GetConnectionString());
+            connection.Open();
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT Password FROM Users WHERE Id = $id LIMIT 1;";
+            cmd.Parameters.AddWithValue("$id", userId);
+            var value = cmd.ExecuteScalar();
+            return value?.ToString() ?? "";
         }
     }
 }
