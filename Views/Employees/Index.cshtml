@@ -2,37 +2,43 @@
 
 @{
     Layout = "_Layout";
+    var isAdmin = (bool?)(ViewBag.IsAdmin) == true;
 }
 
 <div class="page-title-area">
     <h2>社員一覧</h2>
-    <a asp-action="Create" class="btn btn-primary">社員登録</a>
+    @if (isAdmin)
+    {
+        <a asp-action="Create" class="btn btn-primary">社員登録</a>
+    }
 </div>
+
+<form method="get" asp-action="Index" class="mb-3">
+    <input type="text" name="employeeName" placeholder="社員名" />
+    <input type="text" name="departmentName" placeholder="部門名" />
+    <input type="number" name="employeeId" placeholder="社員ID" />
+    <button type="submit" class="btn btn-secondary">検索</button>
+</form>
 
 <table class="data-table">
     <thead>
         <tr>
-            <th>社員ID</th>
-            <th>社員名</th>
-            <th>部門名</th>
-            <th>登録者</th>
-            <th>更新者</th>
-            <th>操作</th>
+            <th>社員ID</th><th>社員番号</th><th>社員名</th><th>メールアドレス</th><th>入社日</th><th>役職</th><th>部門名</th><th>登録日時</th><th>更新日時</th><th>登録者</th><th>更新者</th>
+            @if (isAdmin)
+            {
+                <th>操作</th>
+            }
         </tr>
     </thead>
     <tbody>
         @foreach (var employee in Model)
         {
             <tr>
-                <td>@employee.EmployeeId</td>
-                <td>@employee.EmployeeName</td>
-                <td>@employee.Department?.DepartmentName</td>
-                <td>@employee.CreatedBy</td>
-                <td>@employee.UpdatedBy</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@employee.EmployeeId" class="btn btn-small btn-edit">更新</a>
-                    <a asp-action="Delete" asp-route-id="@employee.EmployeeId" class="btn btn-small btn-delete">削除</a>
-                </td>
+                <td>@employee.EmployeeId</td><td>@employee.EmployeeNumber</td><td>@employee.EmployeeName</td><td>@employee.Email</td><td>@employee.HireDate.ToString("yyyy-MM-dd")</td><td>@employee.Position</td><td>@employee.Department?.DepartmentName</td><td>@employee.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td><td>@employee.UpdatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td><td>@employee.CreatedBy</td><td>@employee.UpdatedBy</td>
+                @if (isAdmin)
+                {
+                    <td><a asp-action="Edit" asp-route-id="@employee.EmployeeId" class="btn btn-small btn-edit">更新</a><a asp-action="Delete" asp-route-id="@employee.EmployeeId" class="btn btn-small btn-delete">削除</a></td>
+                }
             </tr>
         }
     </tbody>
