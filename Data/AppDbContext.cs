@@ -53,6 +53,8 @@ namespace EmployeeManagementWeb.Data
             foreach (var user in roleTargets)
             {
                 user.Role = ResolveRole(user.UserId, user.Role);
+                    user.Role = string.IsNullOrWhiteSpace(user.Role) ? "User" : user.Role;
+                }
             }
 
             if (!Departments.Any())
