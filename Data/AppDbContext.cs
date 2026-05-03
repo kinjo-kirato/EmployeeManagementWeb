@@ -107,9 +107,7 @@ namespace EmployeeManagementWeb.Data
             }
 
             SaveChanges();
-
-
-            var yamada = Employees.IgnoreQueryFilters().FirstOrDefault(e => e.EmployeeName == "山田太郎");
+                        var yamada = Employees.IgnoreQueryFilters().FirstOrDefault(e => e.EmployeeName == "山田太郎");
             if (yamada == null)
             {
                 var general = Departments.FirstOrDefault(d => d.DepartmentName == "総務部") ?? Departments.First();
@@ -131,69 +129,7 @@ namespace EmployeeManagementWeb.Data
 
             SaveChanges();
         }
-
-        private void EnsureLegacySchemaUpdated()
-        {
-            AddColumnIfMissing("Employees", "IsDeleted", "INTEGER NOT NULL DEFAULT 0");
-            AddColumnIfMissing("Employees", "EmployeeNumber", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Employees", "Email", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Employees", "HireDate", "TEXT NOT NULL DEFAULT '2000-01-01'");
-            AddColumnIfMissing("Employees", "Position", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Employees", "CreatedAt", "TEXT NOT NULL DEFAULT '2000-01-01 00:00:00'");
-            AddColumnIfMissing("Employees", "UpdatedAt", "TEXT NOT NULL DEFAULT '2000-01-01 00:00:00'");
-            AddColumnIfMissing("Users", "PasswordHash", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Users", "Role", "TEXT NOT NULL DEFAULT 'User'");
-        }
-
-        private void AddColumnIfMissing(string tableName, string columnName, string definition)
-        {
-            using var connection = new SqliteConnection(Database.GetConnectionString());
-            connection.Open();
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = $"PRAGMA table_info({tableName});";
-
-            var exists = false;
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    if (reader.GetString(1) == columnName)
-                    {
-                        exists = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!exists)
-            {
-                using var alterCmd = connection.CreateCommand();
-                alterCmd.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
-                alterCmd.ExecuteNonQuery();
-            }
-        }
-
-
-        private string ResolveRole(string userId, string? currentRole)
-        {
-            if (userId == "admin")
-            {
-                return "Admin";
-            }
-
-            return string.IsNullOrWhiteSpace(currentRole) ? "User" : currentRole;
-        }
-
-        private string GetLegacyPassword(int userId)
-        {
-            using var connection = new SqliteConnection(Database.GetConnectionString());
-            connection.Open();
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT Password FROM Users WHERE Id = $id LIMIT 1;";
-            cmd.Parameters.AddWithValue("$id", userId);
-            var value = cmd.ExecuteScalar();
-            return value?.ToString() ?? "";
-        }
+        
 
         private void EnsureLegacySchemaUpdated()
         {
@@ -260,4 +196,4 @@ namespace EmployeeManagementWeb.Data
             return value?.ToString() ?? "";
         }
     }
-}
+}   
