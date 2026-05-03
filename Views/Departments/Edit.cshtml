@@ -8,7 +8,13 @@
     <h2>部門更新</h2>
 
     <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="DepartmentId" />
+        <input type="hidden" name="originalDepartmentId" value="@Model.DepartmentId" />
+
+        <div class="form-group">
+            <label asp-for="DepartmentId"></label>
+            <input asp-for="DepartmentId" class="form-control" />
+            <span asp-validation-for="DepartmentId" class="validation"></span>
+        </div>
 
         <div class="form-group">
             <label asp-for="DepartmentName"></label>
