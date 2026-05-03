@@ -2,11 +2,15 @@
 
 @{
     Layout = "_Layout";
+    var isAdmin = (bool?)(ViewBag.IsAdmin) == true;
 }
 
 <div class="page-title-area">
     <h2>部門一覧</h2>
-    <a asp-action="Create" class="btn btn-primary">部門登録</a>
+    @if (isAdmin)
+    {
+        <a asp-action="Create" class="btn btn-primary">部門登録</a>
+    }
 </div>
 
 @if (TempData["ErrorMessage"] != null)
@@ -23,7 +27,10 @@
             <th>部門名</th>
             <th>登録者</th>
             <th>更新者</th>
-            <th>操作</th>
+            @if (isAdmin)
+            {
+                <th>操作</th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -34,10 +41,13 @@
                 <td>@department.DepartmentName</td>
                 <td>@department.CreatedBy</td>
                 <td>@department.UpdatedBy</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@department.DepartmentId" class="btn btn-small btn-edit">更新</a>
-                    <a asp-action="Delete" asp-route-id="@department.DepartmentId" class="btn btn-small btn-delete">削除</a>
-                </td>
+                @if (isAdmin)
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@department.DepartmentId" class="btn btn-small btn-edit">更新</a>
+                        <a asp-action="Delete" asp-route-id="@department.DepartmentId" class="btn btn-small btn-delete">削除</a>
+                    </td>
+                }
             </tr>
         }
     </tbody>
