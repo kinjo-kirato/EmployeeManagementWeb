@@ -50,6 +50,10 @@ namespace EmployeeManagementWeb.Data
             }
 
             var roleTargets = Users.Where(u => u.UserId == "admin" || string.IsNullOrWhiteSpace(u.Role)).ToList();
+            var roleTargets = Users
+                .Where(u => u.UserId == "admin" || string.IsNullOrWhiteSpace(u.Role))
+                .ToList();
+
             foreach (var user in roleTargets)
             {
                 user.Role = ResolveRole(user.UserId, user.Role);
@@ -123,6 +127,7 @@ namespace EmployeeManagementWeb.Data
         {
             using var connection = new SqliteConnection(Database.GetConnectionString());
             connection.Open();
+
             using var cmd = connection.CreateCommand();
             cmd.CommandText = $"PRAGMA table_info({tableName});";
 
@@ -165,6 +170,11 @@ namespace EmployeeManagementWeb.Data
             using var cmd = connection.CreateCommand();
             cmd.CommandText = "SELECT Password FROM Users WHERE Id = $id LIMIT 1;";
             cmd.Parameters.AddWithValue("$id", userId);
+
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT Password FROM Users WHERE Id = $id LIMIT 1;";
+            cmd.Parameters.AddWithValue("$id", userId);
+
             var value = cmd.ExecuteScalar();
             return value?.ToString() ?? "";
         }
