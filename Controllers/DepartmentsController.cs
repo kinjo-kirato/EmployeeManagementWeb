@@ -40,6 +40,12 @@ namespace EmployeeManagementWeb.Controllers
             if (!IsAdmin()) return Forbid();
             if (!ModelState.IsValid) return View(department);
 
+            if (_context.Departments.Any(d => d.DepartmentId == department.DepartmentId))
+            {
+                ModelState.AddModelError(nameof(Department.DepartmentId), "この部門IDはすでに使用されています。");
+                return View(department);
+            }
+
             department.CreatedBy = GetLoginUserName();
             department.UpdatedBy = GetLoginUserName();
             _context.Departments.Add(department);
@@ -57,15 +63,32 @@ namespace EmployeeManagementWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Department department)
+        public IActionResult Edit(int originalDepartmentId, Department department)
         {
             if (!IsLogin()) return RedirectToAction("Login", "Account");
             if (!IsAdmin()) return Forbid();
             if (!ModelState.IsValid) return View(department);
 
-            var target = _context.Departments.Find(department.DepartmentId);
+            var target = _context.Departments.Find(originalDepartmentId);
             if (target == null) return NotFound();
 
+            if (originalDepartmentId != department.DepartmentId
+                && _context.Departments.Any(d => d.DepartmentId == department.DepartmentId))
+            {
+                ModelState.AddModelError(nameof(Department.DepartmentId), "この部門IDはすでに使用されています。");
+                return View(department);
+            }
+
+            if (originalDepartmentId != department.DepartmentId)
+            {
+                var employees = _context.Employees.Where(e => e.DepartmentId == originalDepartmentId).ToList();
+                foreach (var employee in employees)
+                {
+                    employee.DepartmentId = department.DepartmentId;
+                }
+            }
+
+            target.DepartmentId = department.DepartmentId;
             target.DepartmentName = department.DepartmentName;
             target.UpdatedBy = GetLoginUserName();
             _context.SaveChanges();
