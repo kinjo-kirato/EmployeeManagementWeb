@@ -45,6 +45,14 @@ namespace EmployeeManagementWeb.Data
                 {
                     var plainPassword = GetLegacyPassword(user.Id);
                     user.PasswordHash = hasher.HashPassword(user, plainPassword);
+                    user.Role = ResolveRole(user.UserId, user.Role);
+                }
+            }
+
+            var roleTargets = Users.Where(u => u.UserId == "admin" || string.IsNullOrWhiteSpace(u.Role)).ToList();
+            foreach (var user in roleTargets)
+            {
+                user.Role = ResolveRole(user.UserId, user.Role);
                     user.Role = string.IsNullOrWhiteSpace(user.Role) ? "User" : user.Role;
                 }
             }
@@ -139,6 +147,17 @@ namespace EmployeeManagementWeb.Data
                 alterCmd.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
                 alterCmd.ExecuteNonQuery();
             }
+        }
+
+
+        private string ResolveRole(string userId, string? currentRole)
+        {
+            if (userId == "admin")
+            {
+                return "Admin";
+            }
+
+            return string.IsNullOrWhiteSpace(currentRole) ? "User" : currentRole;
         }
 
         private string GetLegacyPassword(int userId)
