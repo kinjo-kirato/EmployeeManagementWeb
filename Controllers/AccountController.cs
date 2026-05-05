@@ -50,6 +50,73 @@ namespace EmployeeManagementWeb.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
+
+        public IActionResult Profile()
+        {
+            var loginUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrWhiteSpace(loginUserId))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == loginUserId);
+            if (user == null)
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction("Login");
+            }
+
+            var model = new ProfileViewModel
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Role = user.Role
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(ProfileViewModel model)
+        {
+            var loginUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrWhiteSpace(loginUserId))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == loginUserId);
+            if (user == null)
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction("Login");
+            }
+
+            model.UserId = user.UserId;
+            model.UserName = user.UserName;
+            model.Role = user.Role;
+
+            if (!ModelState.IsValid)
+            {
+                return View("Profile", model);
+            }
+
+            var hasher = new PasswordHasher<User>();
+            var verifyResult = hasher.VerifyHashedPassword(user, user.PasswordHash, model.CurrentPassword);
+            if (verifyResult == PasswordVerificationResult.Failed)
+            {
+                ModelState.AddModelError(nameof(model.CurrentPassword), "現在のパスワードが正しくありません。");
+                return View("Profile", model);
+            }
+
+            user.PasswordHash = hasher.HashPassword(user, model.NewPassword);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "パスワードを変更しました。";
+            return RedirectToAction("Profile");
+        }
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
