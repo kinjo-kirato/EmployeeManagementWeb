@@ -1,0 +1,32 @@
+erDiagram
+    USERS {
+        int Id PK
+        string UserId UK
+        string PasswordHash
+        string UserName
+        string Role
+    }
+
+    DEPARTMENTS {
+        int DepartmentId PK
+        string DepartmentName
+        string CreatedBy
+        string UpdatedBy
+    }
+
+    EMPLOYEES {
+        int EmployeeId PK
+        string EmployeeNumber
+        string EmployeeName
+        string Email
+        datetime HireDate
+        string Position
+        int DepartmentId FK
+        string CreatedBy
+        string UpdatedBy
+        datetime CreatedAt
+        datetime UpdatedAt
+        bool IsDeleted
+    }
+
+    DEPARTMENTS ||--o{ EMPLOYEES : belongs_to
