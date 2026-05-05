@@ -1,0 +1,44 @@
+@model EmployeeManagementWeb.Models.Department
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="form-card">
+    <h2>部門削除</h2>
+
+    @if (ViewBag.HasEmployees == true)
+    {
+        <div class="error-message">
+            この部門に所属している社員がいるため削除できません。
+        </div>
+
+        <a asp-action="Index" class="btn btn-secondary">戻る</a>
+    }
+    else
+    {
+        <p class="delete-message">
+            以下の部門を削除してもよろしいですか？
+        </p>
+
+        <table class="detail-table">
+            <tr>
+                <th>部門ID</th>
+                <td>@Model.DepartmentId</td>
+            </tr>
+            <tr>
+                <th>部門名</th>
+                <td>@Model.DepartmentName</td>
+            </tr>
+        </table>
+
+        <form asp-action="DeleteConfirmed" method="post">
+            <input type="hidden" name="departmentId" value="@Model.DepartmentId" />
+
+            <div class="button-area">
+                <button type="submit" class="btn btn-delete">削除</button>
+                <a asp-action="Index" class="btn btn-secondary">戻る</a>
+            </div>
+        </form>
+    }
+</div>
