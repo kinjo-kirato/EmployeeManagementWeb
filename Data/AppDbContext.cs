@@ -19,6 +19,25 @@ namespace EmployeeManagementWeb.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.UserId)
+                .IsUnique();
+
+            modelBuilder.Entity<Department>()
+                .HasIndex(d => d.DepartmentName)
+                .IsUnique();
+
+            modelBuilder.Entity<Employee>()
+                .HasIndex(e => e.EmployeeNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Department)
+                .WithMany(d => d.Employees)
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted);
         }
 
@@ -142,6 +161,10 @@ namespace EmployeeManagementWeb.Data
             AddColumnIfMissing("Employees", "UpdatedAt", "TEXT NOT NULL DEFAULT '2000-01-01 00:00:00'");
             AddColumnIfMissing("Users", "PasswordHash", "TEXT NOT NULL DEFAULT ''");
             AddColumnIfMissing("Users", "Role", "TEXT NOT NULL DEFAULT 'User'");
+
+            EnsureIndexIfMissing("Users", "IX_Users_UserId", "CREATE UNIQUE INDEX IX_Users_UserId ON Users(UserId)");
+            EnsureIndexIfMissing("Departments", "IX_Departments_DepartmentName", "CREATE UNIQUE INDEX IX_Departments_DepartmentName ON Departments(DepartmentName)");
+            EnsureIndexIfMissing("Employees", "IX_Employees_EmployeeNumber", "CREATE UNIQUE INDEX IX_Employees_EmployeeNumber ON Employees(EmployeeNumber)");
         }
 
         private void AddColumnIfMissing(string tableName, string columnName, string definition)
@@ -170,6 +193,27 @@ namespace EmployeeManagementWeb.Data
                 using var alterCmd = connection.CreateCommand();
                 alterCmd.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
                 alterCmd.ExecuteNonQuery();
+            }
+        }
+
+
+
+        private void EnsureIndexIfMissing(string tableName, string indexName, string createSql)
+        {
+            using var connection = new SqliteConnection(Database.GetConnectionString());
+            connection.Open();
+
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = $table AND name = $indexName;";
+            cmd.Parameters.AddWithValue("$table", tableName);
+            cmd.Parameters.AddWithValue("$indexName", indexName);
+
+            var exists = cmd.ExecuteScalar() != null;
+            if (!exists)
+            {
+                using var createCmd = connection.CreateCommand();
+                createCmd.CommandText = createSql;
+                createCmd.ExecuteNonQuery();
             }
         }
 
