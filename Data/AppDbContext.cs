@@ -1,6 +1,5 @@
 using EmployeeManagementWeb.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagementWeb.Data
@@ -43,8 +42,6 @@ namespace EmployeeManagementWeb.Data
 
         public void SeedData()
         {
-            EnsureLegacySchemaUpdated();
-
             var hasher = new PasswordHasher<User>();
 
             if (!Users.Any())
@@ -57,17 +54,6 @@ namespace EmployeeManagementWeb.Data
 
                 Users.AddRange(admin, user01);
             }
-            else
-            {
-                var legacyUsers = Users.Where(u => string.IsNullOrEmpty(u.PasswordHash)).ToList();
-                foreach (var user in legacyUsers)
-                {
-                    var plainPassword = GetLegacyPassword(user.Id);
-                    user.PasswordHash = hasher.HashPassword(user, plainPassword);
-                    user.Role = ResolveRole(user.UserId, user.Role);
-                }
-            }
-
             var roleTargets = Users
                 .Where(u => u.UserId == "admin" || string.IsNullOrWhiteSpace(u.Role))
                 .ToList();
@@ -150,73 +136,6 @@ namespace EmployeeManagementWeb.Data
         }
         
 
-        private void EnsureLegacySchemaUpdated()
-        {
-            AddColumnIfMissing("Employees", "IsDeleted", "INTEGER NOT NULL DEFAULT 0");
-            AddColumnIfMissing("Employees", "EmployeeNumber", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Employees", "Email", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Employees", "HireDate", "TEXT NOT NULL DEFAULT '2000-01-01'");
-            AddColumnIfMissing("Employees", "Position", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Employees", "CreatedAt", "TEXT NOT NULL DEFAULT '2000-01-01 00:00:00'");
-            AddColumnIfMissing("Employees", "UpdatedAt", "TEXT NOT NULL DEFAULT '2000-01-01 00:00:00'");
-            AddColumnIfMissing("Users", "PasswordHash", "TEXT NOT NULL DEFAULT ''");
-            AddColumnIfMissing("Users", "Role", "TEXT NOT NULL DEFAULT 'User'");
-
-            EnsureIndexIfMissing("Users", "IX_Users_UserId", "CREATE UNIQUE INDEX IX_Users_UserId ON Users(UserId)");
-            EnsureIndexIfMissing("Departments", "IX_Departments_DepartmentName", "CREATE UNIQUE INDEX IX_Departments_DepartmentName ON Departments(DepartmentName)");
-            EnsureIndexIfMissing("Employees", "IX_Employees_EmployeeNumber", "CREATE UNIQUE INDEX IX_Employees_EmployeeNumber ON Employees(EmployeeNumber)");
-        }
-
-        private void AddColumnIfMissing(string tableName, string columnName, string definition)
-        {
-            using var connection = new SqliteConnection(Database.GetConnectionString());
-            connection.Open();
-
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = $"PRAGMA table_info({tableName});";
-
-            var exists = false;
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    if (reader.GetString(1) == columnName)
-                    {
-                        exists = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!exists)
-            {
-                using var alterCmd = connection.CreateCommand();
-                alterCmd.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
-                alterCmd.ExecuteNonQuery();
-            }
-        }
-
-
-
-        private void EnsureIndexIfMissing(string tableName, string indexName, string createSql)
-        {
-            using var connection = new SqliteConnection(Database.GetConnectionString());
-            connection.Open();
-
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = $table AND name = $indexName;";
-            cmd.Parameters.AddWithValue("$table", tableName);
-            cmd.Parameters.AddWithValue("$indexName", indexName);
-
-            var exists = cmd.ExecuteScalar() != null;
-            if (!exists)
-            {
-                using var createCmd = connection.CreateCommand();
-                createCmd.CommandText = createSql;
-                createCmd.ExecuteNonQuery();
-            }
-        }
-
         private string ResolveRole(string userId, string? currentRole)
         {
             if (userId == "admin")
@@ -227,17 +146,5 @@ namespace EmployeeManagementWeb.Data
             return string.IsNullOrWhiteSpace(currentRole) ? "User" : currentRole;
         }
 
-        private string GetLegacyPassword(int userId)
-        {
-            using var connection = new SqliteConnection(Database.GetConnectionString());
-            connection.Open();
-
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT Password FROM Users WHERE Id = $id LIMIT 1;";
-            cmd.Parameters.AddWithValue("$id", userId);
-
-            var value = cmd.ExecuteScalar();
-            return value?.ToString() ?? "";
-        }
     }
 }   
