@@ -1,0 +1,20 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+
+# SQLite DB
+*.db
+*.sqlite
+*.sqlite3
+
+# macOS
+.DS_Store
+
+bin/
+obj/
+.vs/
+*.user
+*.suo

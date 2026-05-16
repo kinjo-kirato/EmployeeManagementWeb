@@ -1,0 +1,278 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Yu Gothic", "Meiryo", sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+.header {
+    background: linear-gradient(90deg, #1f2937, #374151);
+    color: white;
+    padding: 16px 0;
+}
+
+.header-inner {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 22px;
+    margin: 0;
+}
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+.nav a:hover {
+    text-decoration: underline;
+}
+
+.nav .logout {
+    color: #fca5a5;
+}
+
+.container {
+    width: 90%;
+    margin: 30px auto;
+    min-height: 70vh;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 65vh;
+}
+
+.login-card {
+    background-color: white;
+    padding: 35px;
+    width: 420px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.login-card h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.login-info {
+    margin-top: 20px;
+    background-color: #f3f4f6;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.dashboard h2 {
+    font-size: 28px;
+}
+
+.welcome {
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.menu-card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: 0.2s;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.menu-card h3 {
+    margin-top: 0;
+    color: #2563eb;
+}
+
+.page-title-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.data-table th {
+    background-color: #1f2937;
+    color: white;
+    padding: 14px;
+    text-align: left;
+}
+
+.data-table td {
+    padding: 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table tr:hover {
+    background-color: #f9fafb;
+}
+
+.form-card {
+    background-color: white;
+    padding: 30px;
+    max-width: 650px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.form-card h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.validation {
+    color: #dc2626;
+    font-size: 13px;
+}
+
+.error-message {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.delete-message {
+    color: #991b1b;
+    font-weight: bold;
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.detail-table th {
+    width: 160px;
+    background-color: #f3f4f6;
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+}
+
+.detail-table td {
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.button-area {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #4b5563;
+}
+
+.btn-edit {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+}
+
+.btn-small {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+.full-width {
+    width: 100%;
+}

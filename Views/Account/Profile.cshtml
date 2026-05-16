@@ -1,0 +1,59 @@
+@model EmployeeManagementWeb.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "プロフィール設定";
+}
+
+<h2>プロフィール設定</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<div class="card mb-4">
+    <div class="card-header">ログイン情報</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.UserId)</dt>
+            <dd class="col-sm-9">@Model.UserId</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.UserName)</dt>
+            <dd class="col-sm-9">@Model.UserName</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Role)</dt>
+            <dd class="col-sm-9">@Model.Role</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">パスワード変更</div>
+    <div class="card-body">
+        <form asp-action="ChangePassword" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="CurrentPassword" class="form-label"></label>
+                <input asp-for="CurrentPassword" class="form-control" />
+                <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="NewPassword" class="form-label"></label>
+                <input asp-for="NewPassword" class="form-control" />
+                <span asp-validation-for="NewPassword" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">パスワード変更</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
